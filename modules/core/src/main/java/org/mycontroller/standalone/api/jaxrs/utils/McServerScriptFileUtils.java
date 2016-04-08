@@ -33,7 +33,6 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.mycontroller.standalone.AppProperties;
-import org.mycontroller.standalone.McObjectManager;
 import org.mycontroller.standalone.McUtils;
 import org.mycontroller.standalone.api.jaxrs.ScriptsHandler;
 import org.mycontroller.standalone.api.jaxrs.json.Query;
@@ -41,10 +40,9 @@ import org.mycontroller.standalone.api.jaxrs.json.QueryResponse;
 import org.mycontroller.standalone.exceptions.McBadRequestException;
 import org.mycontroller.standalone.scripts.McScript;
 import org.mycontroller.standalone.scripts.McScriptEngineUtils.SCRIPT_TYPE;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
@@ -52,8 +50,8 @@ import lombok.experimental.UtilityClass;
  */
 
 @UtilityClass
+@Slf4j
 public class McServerScriptFileUtils {
-    static final Logger _logger = LoggerFactory.getLogger(McServerScriptFileUtils.class.getName());
 
     //mc script file filter
     private static final String[] MC_SCRIPT_SUFFIX_FILTER = { "js", "py", "rb", "groovy" };
@@ -66,15 +64,15 @@ public class McServerScriptFileUtils {
             query.setPageLimit(-1);
         }
 
-        String scriptsFileLocation = McObjectManager.getAppProperties().getScriptLocation();
+        String scriptsFileLocation = AppProperties.getInstance().getScriptLocation();
 
         String filesLocation = null;
         if (query.getFilters().get(ScriptsHandler.KEY_TYPE) == null) {
             filesLocation = scriptsFileLocation;
         } else if (query.getFilters().get(ScriptsHandler.KEY_TYPE) == SCRIPT_TYPE.CONDITION) {
-            filesLocation = McObjectManager.getAppProperties().getScriptConditionsLocation();
+            filesLocation = AppProperties.getInstance().getScriptConditionsLocation();
         } else if (query.getFilters().get(ScriptsHandler.KEY_TYPE) == SCRIPT_TYPE.OPERATION) {
-            filesLocation = McObjectManager.getAppProperties().getScriptOperationsLocation();
+            filesLocation = AppProperties.getInstance().getScriptOperationsLocation();
         }
 
         String locationCanonicalPath = McUtils.getDirectoryLocation(FileUtils.getFile(scriptsFileLocation)
@@ -168,7 +166,7 @@ public class McServerScriptFileUtils {
 
     public static void deleteScriptFiles(List<String> scriptFiles) throws IOException {
         String scriptsFileLocation = McUtils.getDirectoryLocation(FileUtils.getFile(
-                McObjectManager.getAppProperties().getScriptLocation()).getCanonicalPath());
+                AppProperties.getInstance().getScriptLocation()).getCanonicalPath());
         for (String scriptFile : scriptFiles) {
             String fileFullPath = scriptsFileLocation + scriptFile;
             if (isInScope(scriptsFileLocation, fileFullPath)) {
@@ -188,7 +186,7 @@ public class McServerScriptFileUtils {
     public static McScript getScriptFile(String scriptFile) throws IOException, IllegalAccessException,
             McBadRequestException {
         String scriptsFileLocation = McUtils.getDirectoryLocation(FileUtils.getFile(
-                McObjectManager.getAppProperties().getScriptLocation()).getCanonicalPath());
+                AppProperties.getInstance().getScriptLocation()).getCanonicalPath());
         String fileFullPath = scriptsFileLocation + scriptFile;
         if (isInScope(scriptsFileLocation, fileFullPath)) {
             if (!FileUtils.getFile(fileFullPath).exists()) {
@@ -234,7 +232,7 @@ public class McServerScriptFileUtils {
             throw new McBadRequestException("Required parameter(s) missing!");
         }
         String fileLocation = McUtils.getDirectoryLocation(FileUtils.getFile(
-                McObjectManager.getAppProperties().getScriptLocation()).getCanonicalPath());
+                AppProperties.getInstance().getScriptLocation()).getCanonicalPath());
         String fileFullPath = null;
         if (mcScript.getType() == SCRIPT_TYPE.CONDITION) {
             fileFullPath = fileLocation + AppProperties.CONDITIONS_SCRIPT_DIRECTORY

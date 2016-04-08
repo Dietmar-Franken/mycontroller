@@ -32,15 +32,18 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.mycontroller.standalone.AppProperties.MC_LANGUAGE;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.1
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class McUtils {
-    private static final Logger _logger = LoggerFactory.getLogger(McUtils.class);
     public static final int DOUBLE_ROUND = 3;
     public static final long SECOND = 1000;
     public static final long MINUTE = SECOND * 60;
@@ -62,10 +65,6 @@ public class McUtils {
     public static final long ONE_HOUR = ONE_MINUTE * 60;     // 1 hour
     public static final long ONE_DAY = ONE_HOUR * 24;        // 1 day
     public static final long ONE_YEAR = ONE_DAY * 365;       // 1 year
-
-    private McUtils() {
-
-    }
 
     public static String getRandomAlphanumeric() {
         return getRandomAlphanumeric(12);
@@ -276,7 +275,7 @@ public class McUtils {
     }
 
     public static void updateLocale() {
-        updateLocale(MC_LANGUAGE.fromString(McObjectManager.getAppProperties().getControllerSettings().getLanguage()));
+        updateLocale(MC_LANGUAGE.fromString(AppProperties.getInstance().getControllerSettings().getLanguage()));
     }
 
     /* file utils*/

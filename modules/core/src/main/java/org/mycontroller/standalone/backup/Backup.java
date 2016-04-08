@@ -24,19 +24,19 @@ import java.util.Date;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
-import org.mycontroller.standalone.McObjectManager;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.McUtils;
 import org.mycontroller.standalone.db.DataBaseUtils;
 import org.mycontroller.standalone.exceptions.McException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.3
  */
+@Slf4j
 public class Backup {
-    private static final Logger _logger = LoggerFactory.getLogger(Backup.class.getName());
     private static String KEY_STORE_FILE = null;
 
     public static synchronized String backup(String prefix) throws McException, IOException {
@@ -50,13 +50,13 @@ public class Backup {
         }
 
         BRCommons.setBackupRestoreRunning(true);
-        String applicationBackupDir = McObjectManager.getAppProperties().getBackupSettings().getBackupLocation()
+        String applicationBackupDir = AppProperties.getInstance().getBackupSettings().getBackupLocation()
                 + prefix + BRCommons.FILE_NAME_IDENTITY
                 + new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss").format(new Date());
         //Create parent dir if not exist
         try {
             FileUtils.forceMkdir(FileUtils.getFile(applicationBackupDir));
-            String databaseBackup = McObjectManager.getAppProperties().getTmpLocation() + BRCommons.DATABASE_FILENAME;
+            String databaseBackup = AppProperties.getInstance().getTmpLocation() + BRCommons.DATABASE_FILENAME;
             if (DataBaseUtils.backupDatabase(databaseBackup)) {
                 //Copy database file
                 FileUtils.moveFile(
@@ -90,17 +90,17 @@ public class Backup {
                     FileUtils.getFile(System.getProperty("mc.conf.file")),
                     FileUtils.getFile(applicationBackupDir + File.separator + BRCommons.APP_PROPERTIES_FILENAME),
                     true);
-            if (McObjectManager.getAppProperties().isWebHttpsEnabled()) {
+            if (AppProperties.getInstance().isWebHttpsEnabled()) {
                 KEY_STORE_FILE = applicationBackupDir + File.separator
-                        + FileUtils.getFile(McObjectManager.getAppProperties().getWebSslKeystoreFile()).getName();
+                        + FileUtils.getFile(AppProperties.getInstance().getWebSslKeystoreFile()).getName();
                 FileUtils.copyFile(
-                        FileUtils.getFile(McObjectManager.getAppProperties().getWebSslKeystoreFile()),
+                        FileUtils.getFile(AppProperties.getInstance().getWebSslKeystoreFile()),
                         FileUtils.getFile(KEY_STORE_FILE),
                         true);
             }
             //Copy scripts directory
             FileUtils.copyDirectory(
-                    FileUtils.getFile(McObjectManager.getAppProperties().getScriptLocation()),
+                    FileUtils.getFile(AppProperties.getInstance().getScriptLocation()),
                     FileUtils.getFile(applicationBackupDir + File.separator + BRCommons.SCRIPTS_LOCATION),
                     true);
 

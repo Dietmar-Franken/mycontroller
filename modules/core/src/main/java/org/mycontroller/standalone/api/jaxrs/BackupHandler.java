@@ -28,15 +28,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.mycontroller.standalone.McObjectManager;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.api.BackupApi;
 import org.mycontroller.standalone.api.jaxrs.json.ApiError;
 import org.mycontroller.standalone.api.jaxrs.json.ApiMessage;
 import org.mycontroller.standalone.api.jaxrs.json.BackupFile;
 import org.mycontroller.standalone.api.jaxrs.utils.RestUtils;
 import org.mycontroller.standalone.settings.BackupSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
 @Produces(APPLICATION_JSON)
 @Consumes(APPLICATION_JSON)
 @RolesAllowed({ "admin" })
+@Slf4j
 public class BackupHandler {
-    private static final Logger _logger = LoggerFactory.getLogger(BackupHandler.class.getName());
 
     private BackupApi backupApi = new BackupApi();
 
@@ -67,7 +67,7 @@ public class BackupHandler {
     @GET
     @Path("/backupSettings")
     public Response getBackupSettings() {
-        return RestUtils.getResponse(Status.OK, McObjectManager.getAppProperties().getBackupSettings());
+        return RestUtils.getResponse(Status.OK, AppProperties.getInstance().getBackupSettings());
     }
 
     @PUT
@@ -75,7 +75,7 @@ public class BackupHandler {
     public Response updateBackupSettings(BackupSettings backupSettings) {
         backupSettings.save();
         BackupSettings.reloadJob();//Reload backup job
-        McObjectManager.getAppProperties().setBackupSettings(BackupSettings.get());
+        AppProperties.getInstance().setBackupSettings(BackupSettings.get());
         return RestUtils.getResponse(Status.OK);
     }
 

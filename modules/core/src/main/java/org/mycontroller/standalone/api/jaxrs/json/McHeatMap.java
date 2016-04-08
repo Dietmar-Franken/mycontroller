@@ -18,7 +18,6 @@ package org.mycontroller.standalone.api.jaxrs.json;
 
 import lombok.Builder;
 import lombok.Data;
-
 import lombok.ToString;
 
 /**
@@ -30,6 +29,8 @@ import lombok.ToString;
 @ToString
 public class McHeatMap {
     private Long id;
+    private Long altId;
+    private Long resourceType;
     private Double value;
     private String tooltip;
 

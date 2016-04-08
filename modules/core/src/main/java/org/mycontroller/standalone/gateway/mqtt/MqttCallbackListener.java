@@ -23,18 +23,18 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.mycontroller.standalone.AppProperties.STATE;
-import org.mycontroller.standalone.McObjectManager;
 import org.mycontroller.standalone.gateway.model.GatewayMQTT;
 import org.mycontroller.standalone.message.RawMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mycontroller.standalone.message.RawMessageQueue;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.2
  */
+@Slf4j
 public class MqttCallbackListener implements MqttCallback {
-    private static final Logger _logger = LoggerFactory.getLogger(MqttCallbackListener.class.getName());
     private IMqttClient mqttClient;
     private GatewayMQTT gateway;
     private boolean reconnect = true;
@@ -89,7 +89,7 @@ public class MqttCallbackListener implements MqttCallback {
     public void messageArrived(String topic, MqttMessage message) {
         try {
             _logger.debug("Message Received, Topic:[{}], PayLoad:[{}]", topic, message);
-            McObjectManager.getRawMessageQueue().putMessage(RawMessage.builder()
+            RawMessageQueue.getInstance().putMessage(RawMessage.builder()
                     .gatewayId(gateway.getId())
                     .data(message.toString())
                     .subData(topic)

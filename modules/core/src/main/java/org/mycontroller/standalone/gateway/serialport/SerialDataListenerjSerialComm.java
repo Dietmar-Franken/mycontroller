@@ -17,23 +17,23 @@
 package org.mycontroller.standalone.gateway.serialport;
 
 import org.mycontroller.standalone.AppProperties.STATE;
-import org.mycontroller.standalone.McObjectManager;
 import org.mycontroller.standalone.McUtils;
 import org.mycontroller.standalone.gateway.model.GatewaySerial;
 import org.mycontroller.standalone.message.RawMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mycontroller.standalone.message.RawMessageQueue;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.1
  */
+@Slf4j
 public class SerialDataListenerjSerialComm implements SerialPortDataListener {
-    private static final Logger _logger = LoggerFactory.getLogger(SerialDataListenerjSerialComm.class.getName());
 
     private SerialPort serialPort;
     private GatewaySerial gateway = null;
@@ -63,7 +63,7 @@ public class SerialDataListenerjSerialComm implements SerialPortDataListener {
                     String toProcess = message.toString();
                     _logger.debug("Received a message:[{}]", toProcess);
                     //Send Message to message factory
-                    McObjectManager.getRawMessageQueue().putMessage(RawMessage.builder()
+                    RawMessageQueue.getInstance().putMessage(RawMessage.builder()
                             .gatewayId(gateway.getId())
                             .data(toProcess)
                             .networkType(gateway.getNetworkType())
@@ -75,7 +75,7 @@ public class SerialDataListenerjSerialComm implements SerialPortDataListener {
                 } else if (message.length() >= MYCSerialPort.SERIAL_DATA_MAX_SIZE) {
                     _logger.warn(
                             "Serial receive buffer size reached to MAX level[{} chars], "
-                            + "Now clearing the buffer. Existing data:[{}]",
+                                    + "Now clearing the buffer. Existing data:[{}]",
                             MYCSerialPort.SERIAL_DATA_MAX_SIZE, message.toString());
                     message.setLength(0);
                 } else {

@@ -26,29 +26,28 @@ import java.sql.SQLException;
 import org.apache.commons.io.FileUtils;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
-import org.mycontroller.standalone.McObjectManager;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.McUtils;
 import org.mycontroller.standalone.db.tables.SystemJob;
 import org.mycontroller.standalone.message.McMessageUtils.MESSAGE_TYPE_PRESENTATION;
 import org.mycontroller.standalone.message.McMessageUtils.MESSAGE_TYPE_SET_REQ;
 import org.mycontroller.standalone.settings.MyControllerSettings;
 import org.mycontroller.standalone.settings.SettingsUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.1
  */
+@Slf4j
 public class DataBaseUtils {
     private DataBaseUtils() {
     }
 
-    private static final Logger _logger = LoggerFactory.getLogger(DataBaseUtils.class.getName());
     private static boolean isDbLoaded = false;
     // private static ConnectionSource connectionSource = null;
     private static JdbcPooledConnectionSource connectionPooledSource = null;
@@ -87,7 +86,7 @@ public class DataBaseUtils {
              */
 
             //Update Database url
-            DB_URL = DB_URL_PREFIX + McObjectManager.getAppProperties().getDbH2DbLocation();
+            DB_URL = DB_URL_PREFIX + AppProperties.getInstance().getDbH2DbLocation();
 
             // pooled connection source
             connectionPooledSource = new JdbcPooledConnectionSource(DB_URL, DB_USERNAME, DB_PASSWORD);
@@ -140,12 +139,12 @@ public class DataBaseUtils {
             }
 
             //After executed migration, reload settings again
-            McObjectManager.getAppProperties().loadPropertiesFromDb();
+            AppProperties.getInstance().loadPropertiesFromDb();
 
             _logger.info("Number of migrations done:{}", migrationsCount);
             _logger.info("Application information: [Version:{}, Database version:{}]",
-                    McObjectManager.getAppProperties().getControllerSettings().getVersion(),
-                    McObjectManager.getAppProperties().getControllerSettings().getDbVersion());
+                    AppProperties.getInstance().getControllerSettings().getVersion(),
+                    AppProperties.getInstance().getControllerSettings().getDbVersion());
 
             //create or update static json file used for GUI before login
             SettingsUtils.updateStaticJsonInformationFile();
@@ -216,13 +215,13 @@ public class DataBaseUtils {
         Connection conn = null;
         try {
             _logger.debug("database backup triggered...");
-            conn = DriverManager.getConnection(DB_URL_PREFIX + McObjectManager.getAppProperties().getDbH2DbLocation(),
+            conn = DriverManager.getConnection(DB_URL_PREFIX + AppProperties.getInstance().getDbH2DbLocation(),
                     DB_USERNAME, DB_PASSWORD);
             PreparedStatement statement = conn.prepareStatement("RUNSCRIPT FROM ? COMPRESSION ZIP");
             statement.setString(1, databaseRestoreScript);
             statement.execute();
             _logger.info("Database restore completed. Database location:{}, Restored file name:{}",
-                    McObjectManager.getAppProperties().getDbH2DbLocation(), databaseRestoreScript);
+                    AppProperties.getInstance().getDbH2DbLocation(), databaseRestoreScript);
             return true;
         } catch (SQLException ex) {
             _logger.error("Exception, backup failed!", ex);

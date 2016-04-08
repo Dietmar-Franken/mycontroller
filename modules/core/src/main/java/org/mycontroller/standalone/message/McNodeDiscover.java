@@ -22,22 +22,19 @@ import org.mycontroller.standalone.db.DaoUtils;
 import org.mycontroller.standalone.db.tables.Node;
 import org.mycontroller.standalone.message.McMessageUtils.MESSAGE_TYPE;
 import org.mycontroller.standalone.message.McMessageUtils.MESSAGE_TYPE_INTERNAL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.2
  */
-
+@Slf4j
+@AllArgsConstructor
 public class McNodeDiscover implements Runnable {
-    private static final Logger _logger = LoggerFactory.getLogger(McNodeDiscover.class.getName());
 
     private int gatewayId;
-
-    public McNodeDiscover(int gatewayId) {
-        this.gatewayId = gatewayId;
-    }
 
     private void discoverNodes() {
         if (McMessageUtils.isDiscoverRunning(gatewayId)) {

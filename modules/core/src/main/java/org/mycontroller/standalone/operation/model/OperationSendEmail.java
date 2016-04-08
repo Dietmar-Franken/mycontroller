@@ -29,14 +29,14 @@ import org.mycontroller.standalone.db.tables.Timer;
 import org.mycontroller.standalone.email.EmailUtils;
 import org.mycontroller.standalone.operation.OperationNotification;
 import org.mycontroller.standalone.rule.model.RuleDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
@@ -45,8 +45,9 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString
+@Slf4j
+@NoArgsConstructor
 public class OperationSendEmail extends Operation {
-    private static final Logger _logger = LoggerFactory.getLogger(OperationSendEmail.class);
     public static final String EMAIL_TEMPLATE_RULE = "../conf/templates/emailTemplateAlarm.html";
 
     public static final String KEY_TO_EMAIL_ADDRESSES = "toEmailAddress";
@@ -54,10 +55,6 @@ public class OperationSendEmail extends Operation {
 
     private String toEmailAddresses;
     private String emailSubject;
-
-    public OperationSendEmail() {
-
-    }
 
     public OperationSendEmail(OperationTable operationTable) {
         this.updateOperation(operationTable);

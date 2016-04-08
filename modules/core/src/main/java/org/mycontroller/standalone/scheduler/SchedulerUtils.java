@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.knowm.sundial.SundialJobScheduler;
-import org.mycontroller.standalone.McObjectManager;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.McUtils;
 import org.mycontroller.standalone.db.DaoUtils;
 import org.mycontroller.standalone.db.tables.SystemJob;
@@ -35,23 +35,23 @@ import org.mycontroller.standalone.timer.TimerUtils;
 import org.mycontroller.standalone.timer.TimerUtils.TIMER_TYPE;
 import org.mycontroller.standalone.timer.TimerUtils.WEEK_DAY;
 import org.mycontroller.standalone.timer.jobs.TimerJob;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.1
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SchedulerUtils {
     public static final String JOB_DATA = "job-data";
     public static final String SYSTEM_JOB_REF = "SYS_";
     public static final String TIMER_JOB_REF = "TIMER_";
     public static final String CRON_TRIGGER_REF = "_Cron_Trigger";
     private static final long FROM_TIME_DELAY = McUtils.ONE_SECOND;
-    private static final Logger _logger = LoggerFactory.getLogger(SchedulerUtils.class);
-
-    private SchedulerUtils() {
-    }
 
     public static void startScheduler() {
         SundialJobScheduler.startScheduler();
@@ -314,7 +314,7 @@ public class SchedulerUtils {
                 NodeAliveStatusJob.TRIGGER_NAME,
                 NodeAliveStatusJob.NAME,
                 -1,
-                McObjectManager.getAppProperties().getControllerSettings().getAliveCheckInterval(),
+                AppProperties.getInstance().getControllerSettings().getAliveCheckInterval(),
                 //Start this job after 10 seconds
                 new Date(System.currentTimeMillis() + (McUtils.ONE_SECOND * 10)),
                 null);

@@ -19,22 +19,21 @@ package org.mycontroller.standalone.email;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.mycontroller.standalone.McObjectManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mycontroller.standalone.AppProperties;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.1
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EmailUtils {
-    private static final Logger _logger = LoggerFactory.getLogger(EmailUtils.class);
 
     private static HtmlEmail email = null;
-
-    private EmailUtils() {
-
-    }
 
     public static void sendSimpleEmail(String emails, String subject, String message) throws EmailException {
         initializeEmail();
@@ -48,15 +47,15 @@ public class EmailUtils {
 
     public static void initializeEmail() throws EmailException {
         email = new HtmlEmail();
-        email.setHostName(McObjectManager.getAppProperties().getEmailSettings().getSmtpHost());
-        email.setSmtpPort(McObjectManager.getAppProperties().getEmailSettings().getSmtpPort());
-        if (McObjectManager.getAppProperties().getEmailSettings().getSmtpUsername() != null
-                && McObjectManager.getAppProperties().getEmailSettings().getSmtpUsername().length() > 0) {
-            email.setAuthenticator(new DefaultAuthenticator(McObjectManager.getAppProperties().getEmailSettings()
+        email.setHostName(AppProperties.getInstance().getEmailSettings().getSmtpHost());
+        email.setSmtpPort(AppProperties.getInstance().getEmailSettings().getSmtpPort());
+        if (AppProperties.getInstance().getEmailSettings().getSmtpUsername() != null
+                && AppProperties.getInstance().getEmailSettings().getSmtpUsername().length() > 0) {
+            email.setAuthenticator(new DefaultAuthenticator(AppProperties.getInstance().getEmailSettings()
                     .getSmtpUsername(),
-                    McObjectManager.getAppProperties().getEmailSettings().getSmtpPassword()));
+                    AppProperties.getInstance().getEmailSettings().getSmtpPassword()));
         }
-        email.setSSLOnConnect(McObjectManager.getAppProperties().getEmailSettings().getEnableSsl());
-        email.setFrom(McObjectManager.getAppProperties().getEmailSettings().getFromAddress());
+        email.setSSLOnConnect(AppProperties.getInstance().getEmailSettings().getEnableSsl());
+        email.setFrom(AppProperties.getInstance().getEmailSettings().getFromAddress());
     }
 }

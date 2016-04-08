@@ -35,21 +35,20 @@ import org.mycontroller.standalone.gateway.model.GatewaySerial;
 import org.mycontroller.standalone.gateway.mqtt.MqttGatewayImpl;
 import org.mycontroller.standalone.gateway.serialport.MYCSerialPort;
 import org.mycontroller.standalone.model.ResourceModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.2
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GatewayUtils {
-    private static final Logger _logger = LoggerFactory.getLogger(GatewayUtils.class.getName());
 
     public static final String OS_ARCH_ARM = "arm";
-
-    private GatewayUtils() {
-
-    }
 
     public enum GATEWAY_TYPE {
         SERIAL("Serial"),

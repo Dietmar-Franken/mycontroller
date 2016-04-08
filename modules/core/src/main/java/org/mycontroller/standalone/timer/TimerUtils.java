@@ -23,8 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.AppProperties.RESOURCE_TYPE;
-import org.mycontroller.standalone.McObjectManager;
 import org.mycontroller.standalone.McUtils;
 import org.mycontroller.standalone.db.DaoUtils;
 import org.mycontroller.standalone.db.ResourceOperation;
@@ -36,22 +36,21 @@ import org.mycontroller.standalone.jobs.ManageSunRiseSetJobs;
 import org.mycontroller.standalone.model.ResourceModel;
 import org.mycontroller.standalone.scheduler.SchedulerUtils;
 import org.mycontroller.standalone.settings.LocationSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.1
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TimerUtils {
-    private static final Logger _logger = LoggerFactory.getLogger(TimerUtils.class);
-
-    private TimerUtils() {
-
-    }
 
     public static Date sunriseTime;
     public static Date sunsetTime;
@@ -174,8 +173,8 @@ public class TimerUtils {
         Date tmpSunsetTime = sunsetTime;
         //https://github.com/mikereedell/sunrisesunsetlib-java
         Location location = new Location(
-                McObjectManager.getAppProperties().getLocationSettings().getLatitude(),
-                McObjectManager.getAppProperties().getLocationSettings().getLongitude());
+                AppProperties.getInstance().getLocationSettings().getLatitude(),
+                AppProperties.getInstance().getLocationSettings().getLongitude());
         SunriseSunsetCalculator sunriseSunsetCalculator = new SunriseSunsetCalculator(location, TimeZone.getDefault());
 
         sunriseTime = sunriseSunsetCalculator.getOfficialSunriseCalendarForDate(Calendar.getInstance()).getTime();
@@ -185,8 +184,8 @@ public class TimerUtils {
         LocationSettings.builder().sunriseTime(sunriseTime.getTime()).sunsetTime(sunsetTime.getTime()).build()
                 .updateInternal();
         //update location settings to object factory
-        McObjectManager.getAppProperties().setLocationSettings(LocationSettings.get());
-        _logger.debug("Location settings after updated:{}", McObjectManager.getAppProperties().getLocationSettings());
+        AppProperties.getInstance().setLocationSettings(LocationSettings.get());
+        _logger.debug("Location settings after updated:{}", AppProperties.getInstance().getLocationSettings());
 
         if (!(tmpSunriseTime == null || sunriseTime == null)) {
             //call Manage sun rise sun set jobs, if value changed
@@ -225,7 +224,7 @@ public class TimerUtils {
         }
         if (timer.getTimerType() == TIMER_TYPE.NORMAL) {
             builder.append("], [Time: ")
-                    .append(new SimpleDateFormat(McObjectManager.getAppProperties().getTimeFormat()).format(new Date(
+                    .append(new SimpleDateFormat(AppProperties.getInstance().getTimeFormat()).format(new Date(
                             timer.getTriggerTime())))
                     .append("]");
         } else {
@@ -270,19 +269,19 @@ public class TimerUtils {
         StringBuilder stringBuilder = new StringBuilder();
         if (timer.getValidityFrom() != null && timer.getValidityTo() != null) {
             stringBuilder
-                    .append(new SimpleDateFormat(McObjectManager.getAppProperties().getDateFormatWithoutSeconds())
+                    .append(new SimpleDateFormat(AppProperties.getInstance().getDateFormatWithoutSeconds())
                             .format(new Date(timer.getValidityFrom())));
             stringBuilder.append(" ~ ");
-            stringBuilder.append(new SimpleDateFormat(McObjectManager.getAppProperties()
+            stringBuilder.append(new SimpleDateFormat(AppProperties.getInstance()
                     .getDateFormatWithoutSeconds()).format(new Date(timer.getValidityTo())));
         } else if (timer.getValidityFrom() != null) {
             stringBuilder.append("From ");
             stringBuilder
-                    .append(new SimpleDateFormat(McObjectManager.getAppProperties().getDateFormatWithoutSeconds())
+                    .append(new SimpleDateFormat(AppProperties.getInstance().getDateFormatWithoutSeconds())
                             .format(new Date(timer.getValidityFrom())));
         } else if (timer.getValidityTo() != null) {
             stringBuilder.append("Till ");
-            stringBuilder.append(new SimpleDateFormat(McObjectManager.getAppProperties()
+            stringBuilder.append(new SimpleDateFormat(AppProperties.getInstance()
                     .getDateFormatWithoutSeconds()).format(new Date(timer.getValidityTo())));
         }
         return stringBuilder.toString();
@@ -290,7 +289,7 @@ public class TimerUtils {
 
     public static Long getValidFromToTime(String date) {
         try {
-            return new SimpleDateFormat(McObjectManager.getAppProperties().getDateFormat()).parse(date)
+            return new SimpleDateFormat(AppProperties.getInstance().getDateFormat()).parse(date)
                     .getTime();
         } catch (ParseException ex) {
             _logger.error("exception, ", ex);

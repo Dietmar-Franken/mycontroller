@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mycontroller.standalone.McObjectManager;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.api.jaxrs.json.Query;
 import org.mycontroller.standalone.api.jaxrs.json.QueryResponse;
 import org.mycontroller.standalone.db.DaoUtils;
@@ -30,18 +30,18 @@ import org.mycontroller.standalone.db.tables.RoleNodeMap;
 import org.mycontroller.standalone.db.tables.RoleSensorMap;
 import org.mycontroller.standalone.db.tables.RoleUserMap;
 import org.mycontroller.standalone.db.tables.SensorVariable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.2
  */
+@Slf4j
 public class RoleDaoImpl extends BaseAbstractDaoImpl<Role, Integer> implements RoleDao {
-    private static final Logger _logger = LoggerFactory.getLogger(RoleDaoImpl.class);
 
     public RoleDaoImpl(ConnectionSource connectionSource) throws SQLException {
         super(connectionSource, Role.class);
@@ -134,7 +134,7 @@ public class RoleDaoImpl extends BaseAbstractDaoImpl<Role, Integer> implements R
                     ids.add(roleNodeMap.getNode().getId());
                 }
             }
-            if (McObjectManager.getAppProperties().getControllerSettings().getGrantAccessToChildResources()) {
+            if (AppProperties.getInstance().getControllerSettings().getGrantAccessToChildResources()) {
                 ids.addAll(DaoUtils.getNodeDao().getNodeIdsByGatewayIds(getGatewayIds(userId)));
             }
         } catch (SQLException ex) {
@@ -159,7 +159,7 @@ public class RoleDaoImpl extends BaseAbstractDaoImpl<Role, Integer> implements R
                     ids.add(roleSensorMap.getSensor().getId());
                 }
             }
-            if (McObjectManager.getAppProperties().getControllerSettings().getGrantAccessToChildResources()) {
+            if (AppProperties.getInstance().getControllerSettings().getGrantAccessToChildResources()) {
                 ids.addAll(DaoUtils.getSensorDao().getSensorIdsByNodeIds(getNodeIds(userId)));
             }
         } catch (SQLException ex) {

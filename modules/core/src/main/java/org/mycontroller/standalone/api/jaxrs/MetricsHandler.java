@@ -18,10 +18,12 @@ package org.mycontroller.standalone.api.jaxrs;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.script.ScriptException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,6 +32,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.AppProperties.RESOURCE_TYPE;
 import org.mycontroller.standalone.MC_LOCALE;
 import org.mycontroller.standalone.McObjectManager;
@@ -46,9 +49,11 @@ import org.mycontroller.standalone.db.tables.MetricsBatteryUsage;
 import org.mycontroller.standalone.db.tables.MetricsBinaryTypeDevice;
 import org.mycontroller.standalone.db.tables.MetricsDoubleTypeDevice;
 import org.mycontroller.standalone.db.tables.SensorVariable;
+import org.mycontroller.standalone.exceptions.McBadRequestException;
 import org.mycontroller.standalone.metrics.MetricDouble;
 import org.mycontroller.standalone.metrics.MetricsCsvEngine;
 import org.mycontroller.standalone.model.ResourceModel;
+import org.mycontroller.standalone.scripts.McScriptException;
 import org.mycontroller.standalone.settings.MetricsGraph;
 import org.mycontroller.standalone.settings.MetricsGraph.CHART_TYPE;
 import org.mycontroller.standalone.settings.MetricsGraphSettings;
@@ -112,6 +117,56 @@ public class MetricsHandler extends AccessEngine {
                     new ApiError("Sensor variable id(s) is required!"));
         }
         return RestUtils.getResponse(Status.OK, getMetricsBulletChart(variableIds, timestampFrom, timestampTo));
+    }
+
+    @GET
+    @Path("/heatMapBatteryLevel")
+    public Response getHeatMapBatteryLevel(@QueryParam("nodeId") List<Integer> nodeIds) {
+        if (!nodeIds.isEmpty()) {
+            return RestUtils.getResponse(Status.OK, metricApi.getHeatMapNodeBatteryLevel(nodeIds));
+        } else {
+            return RestUtils.getResponse(Status.BAD_REQUEST,
+                    new ApiError("Node id(s) is required!"));
+        }
+    }
+
+    @GET
+    @Path("/heatMapNodeStatus")
+    public Response getHeatMapNodeStatus(@QueryParam("nodeId") List<Integer> nodeIds) {
+        if (!nodeIds.isEmpty()) {
+            return RestUtils.getResponse(Status.OK, metricApi.getHeatMapNodeState(nodeIds));
+        } else {
+            return RestUtils.getResponse(Status.BAD_REQUEST,
+                    new ApiError("Node id(s) is required!"));
+        }
+    }
+
+    @GET
+    @Path("/heatMapSensorVariable")
+    public Response getHeatMapSensorVariable(@QueryParam("variableId") List<Integer> sVariableIds,
+            @QueryParam("upperLimit") Double upperLimit) {
+        if (!sVariableIds.isEmpty()) {
+            return RestUtils
+                    .getResponse(Status.OK, metricApi.getHeatMapSensorVariableDouble(sVariableIds, upperLimit));
+        } else {
+            return RestUtils.getResponse(Status.BAD_REQUEST,
+                    new ApiError("Sensor variable id(s) is required!"));
+        }
+    }
+
+    @GET
+    @Path("/heatMapScript")
+    public Response getHeatMapScript(@QueryParam("scriptName") String scriptName) {
+        if (scriptName != null) {
+            try {
+                return RestUtils.getResponse(Status.OK, metricApi.getHeatMapScript(scriptName));
+            } catch (McBadRequestException | IllegalAccessException | IOException | McScriptException
+                    | ScriptException ex) {
+                return RestUtils.getResponse(Status.BAD_REQUEST, new ApiError(ex.getMessage()));
+            }
+        } else {
+            return RestUtils.getResponse(Status.BAD_REQUEST, new ApiError("Script file name is required!"));
+        }
     }
 
     @GET
@@ -203,7 +258,7 @@ public class MetricsHandler extends AccessEngine {
             }
 
         }
-        MetricsGraph metricBattery = McObjectManager.getAppProperties().getMetricsGraphSettings().getBattery();
+        MetricsGraph metricBattery = AppProperties.getInstance().getMetricsGraphSettings().getBattery();
         preDoubleData.add(MetricsChartDataNVD3.builder()
                 .key(McObjectManager.getMcLocale().getString(MC_LOCALE.AVERAGE))
                 .values(avgMetricValues)
@@ -253,7 +308,7 @@ public class MetricsHandler extends AccessEngine {
             return new ArrayList<MetricsChartDataGroupNVD3>();
         }
 
-        MetricsGraphSettings metricsGraphSettings = McObjectManager.getAppProperties().getMetricsGraphSettings();
+        MetricsGraphSettings metricsGraphSettings = AppProperties.getInstance().getMetricsGraphSettings();
         ArrayList<MetricsChartDataGroupNVD3> finalData = new ArrayList<MetricsChartDataGroupNVD3>();
 
         SensorVariable yaxis1Variable = null;
@@ -407,7 +462,7 @@ public class MetricsHandler extends AccessEngine {
             return new ArrayList<MetricsChartDataGroupNVD3>();
         }
 
-        MetricsGraphSettings metricsGraphSettings = McObjectManager.getAppProperties().getMetricsGraphSettings();
+        MetricsGraphSettings metricsGraphSettings = AppProperties.getInstance().getMetricsGraphSettings();
         ArrayList<MetricsChartDataGroupNVD3> finalData = new ArrayList<MetricsChartDataGroupNVD3>();
 
         for (SensorVariable sensorVariable : sensorVariables) {
@@ -506,16 +561,16 @@ public class MetricsHandler extends AccessEngine {
             //subtract 5 seconds to get proper timeformat
             Long timeDifferance = System.currentTimeMillis() - timestampFrom - (McUtils.ONE_SECOND * 5);
             if (timeDifferance > (McUtils.ONE_DAY * 365)) {
-                return McObjectManager.getAppProperties().getDateFormat();
+                return AppProperties.getInstance().getDateFormat();
             } else if (timeDifferance > McUtils.ONE_DAY * 7) {
-                return "MMM dd, " + McObjectManager.getAppProperties().getTimeFormat();
+                return "MMM dd, " + AppProperties.getInstance().getTimeFormat();
             } else if (timeDifferance > McUtils.ONE_DAY * 1) {
-                return "dd, " + McObjectManager.getAppProperties().getTimeFormat();
+                return "dd, " + AppProperties.getInstance().getTimeFormat();
             } else {
-                return McObjectManager.getAppProperties().getTimeFormat();
+                return AppProperties.getInstance().getTimeFormat();
             }
         } else {
-            return McObjectManager.getAppProperties().getDateFormat();
+            return AppProperties.getInstance().getDateFormat();
         }
     }
 }

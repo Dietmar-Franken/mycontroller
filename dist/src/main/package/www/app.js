@@ -48,6 +48,7 @@ var myControllerModule = angular.module('myController',[
   'adf.widget.myc-sensors-grouped-graph',
   'adf.widget.myc-sensors-mixed-graph',
   'adf.widget.myc-sensors-bullet-graph',
+  'adf.widget.myc-heat-map',
   'adf.widget.myc-dsi',
   'adf.widget.myc-time',
   'adf.widget.myc-sunrisetime',
@@ -582,7 +583,7 @@ myControllerModule.run(function ($rootScope, $state, $location, $http, mchelper,
         angular.element( document.querySelector( '#rootView' ) ).removeClass( "container-fluid top-buffer-m top-buffer-nm" );
     }else{
       angular.element( document.querySelector( '#rootId' ) ).removeClass( "login-pf" );
-      angular.element( document.querySelector( '#rootView' ) ).addClass( "container-fluid top-buffer-m top-buffer-nm" );
+      angular.element( document.querySelector( '#rootView' ) ).addClass( "container-fluid" );
     }
     var requireLogin = toState.data.requireLogin;
     // redirect to login page if not logged in

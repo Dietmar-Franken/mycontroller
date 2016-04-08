@@ -20,21 +20,21 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.mycontroller.standalone.McObjectManager;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.McUtils;
 import org.mycontroller.standalone.db.tables.RuleDefinitionTable;
 import org.mycontroller.standalone.rule.model.RuleDefinitionScript;
 import org.mycontroller.standalone.scripts.McScript;
 import org.mycontroller.standalone.scripts.McScriptEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.3
  */
+@Slf4j
 public class McConditionScript extends McRuleBase {
-    private static final Logger _logger = LoggerFactory.getLogger(McConditionScript.class);
     public RuleDefinitionScript rdScript; //data to operate on
 
     public McConditionScript(RuleDefinitionTable ruleDefinitionTable) {
@@ -55,7 +55,7 @@ public class McConditionScript extends McRuleBase {
         //execute script
         try {
             File scriptFile = FileUtils.getFile(
-                    McObjectManager.getAppProperties().getScriptLocation() + rdScript.getScriptFile());
+                    AppProperties.getInstance().getScriptLocation() + rdScript.getScriptFile());
             McScript mcScript = McScript.builder()
                     .name(scriptFile.getCanonicalPath())
                     .extension(FilenameUtils.getExtension(scriptFile.getCanonicalPath()))

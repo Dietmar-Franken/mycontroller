@@ -16,29 +16,28 @@
  */
 package org.mycontroller.standalone.operation;
 
-import org.mycontroller.standalone.McObjectManager;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.restclient.ClientResponse;
 import org.mycontroller.standalone.restclient.pushbullet.PushbulletClient;
 import org.mycontroller.standalone.restclient.pushbullet.PushbulletClientImpl;
 import org.mycontroller.standalone.restclient.pushbullet.model.Push;
 import org.mycontroller.standalone.restclient.pushbullet.model.PushResponse;
 import org.mycontroller.standalone.restclient.pushbullet.model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.3
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PushbulletUtils {
-    private static final Logger _logger = LoggerFactory.getLogger(PushbulletUtils.class);
 
     // Create a rest clients
     private static PushbulletClient pushbulletClient = null;
-
-    private PushbulletUtils() {
-
-    }
 
     public static synchronized void sendNote(String idens, String title, String body) {
         updateClient();
@@ -83,9 +82,9 @@ public class PushbulletUtils {
     private static void updateClient() {
         if (pushbulletClient == null) {
             try {
-                _logger.debug("PushBullet:{}", McObjectManager.getAppProperties().getPushbulletSettings());
+                _logger.debug("PushBullet:{}", AppProperties.getInstance().getPushbulletSettings());
                 pushbulletClient = new PushbulletClientImpl(
-                        McObjectManager.getAppProperties().getPushbulletSettings().getAccessToken(), null);
+                        AppProperties.getInstance().getPushbulletSettings().getAccessToken(), null);
             } catch (Exception ex) {
                 _logger.error("Unable to create Pushbullet client, ", ex);
                 throw new RuntimeException("Error: " + ex.getMessage());

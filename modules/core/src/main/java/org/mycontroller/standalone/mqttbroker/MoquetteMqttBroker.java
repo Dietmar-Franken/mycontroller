@@ -18,27 +18,25 @@ package org.mycontroller.standalone.mqttbroker;
 
 import java.io.IOException;
 
-import org.mycontroller.standalone.McObjectManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mycontroller.standalone.AppProperties;
 
 import io.moquette.server.Server;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.2
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MoquetteMqttBroker {
-    private static final Logger _logger = LoggerFactory.getLogger(MoquetteMqttBroker.class.getName());
     private static boolean isRunning = false;
     private static Server mqttServer = null;
 
-    private MoquetteMqttBroker() {
-
-    }
-
     public static synchronized void start() {
-        if (!McObjectManager.getAppProperties().isMqttBrokerEnabled()) {
+        if (!AppProperties.getInstance().isMqttBrokerEnabled()) {
             _logger.debug("InBuilt MQTT broker is not enabled... Skipping to start...");
             return;
         }
@@ -57,7 +55,7 @@ public class MoquetteMqttBroker {
     }
 
     public static synchronized void stop() {
-        if (!McObjectManager.getAppProperties().isMqttBrokerEnabled()) {
+        if (!AppProperties.getInstance().isMqttBrokerEnabled()) {
             _logger.debug("InBuilt MQTT broker is not enabled... Skipping to stop...");
             return;
         }

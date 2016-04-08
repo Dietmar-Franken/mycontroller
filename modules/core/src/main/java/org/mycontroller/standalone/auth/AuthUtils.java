@@ -21,19 +21,18 @@ import javax.ws.rs.core.SecurityContext;
 import org.mycontroller.standalone.AppProperties.RESOURCE_TYPE;
 import org.mycontroller.standalone.db.DaoUtils;
 import org.mycontroller.standalone.db.tables.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.2
  */
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthUtils {
-    public static final Logger _logger = LoggerFactory.getLogger(AuthUtils.class);
-
-    private AuthUtils() {
-
-    }
 
     public enum PERMISSION_TYPE {
         SUPER_ADMIN("Super admin"),

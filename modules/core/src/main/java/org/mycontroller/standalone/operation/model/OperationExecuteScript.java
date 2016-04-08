@@ -21,21 +21,21 @@ import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.mycontroller.standalone.McObjectManager;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.db.DaoUtils;
 import org.mycontroller.standalone.db.tables.OperationTable;
 import org.mycontroller.standalone.db.tables.Timer;
 import org.mycontroller.standalone.rule.model.RuleDefinition;
 import org.mycontroller.standalone.scripts.McScript;
 import org.mycontroller.standalone.scripts.McScriptEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
@@ -44,16 +44,13 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString
+@Slf4j
+@NoArgsConstructor
 public class OperationExecuteScript extends Operation {
-    private static final Logger _logger = LoggerFactory.getLogger(OperationSendEmail.class);
 
     public static final String KEY_SCRIPT_FILE = "scriptFile";
 
     private String scriptFile;
-
-    public OperationExecuteScript() {
-
-    }
 
     public OperationExecuteScript(OperationTable operationTable) {
         this.updateOperation(operationTable);
@@ -110,7 +107,7 @@ public class OperationExecuteScript extends Operation {
         }
         try {
             File script = FileUtils.getFile(
-                    McObjectManager.getAppProperties().getScriptLocation() + scriptFile);
+                    AppProperties.getInstance().getScriptLocation() + scriptFile);
             McScript mcScript = McScript.builder()
                     .name(script.getCanonicalPath())
                     .extension(FilenameUtils.getExtension(script.getCanonicalPath()))

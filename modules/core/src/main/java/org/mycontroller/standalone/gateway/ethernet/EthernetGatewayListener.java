@@ -21,18 +21,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import org.mycontroller.standalone.McObjectManager;
 import org.mycontroller.standalone.gateway.model.GatewayEthernet;
 import org.mycontroller.standalone.message.RawMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mycontroller.standalone.message.RawMessageQueue;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.2
  */
+@Slf4j
 public class EthernetGatewayListener implements Runnable {
-    private static final Logger _logger = LoggerFactory.getLogger(EthernetGatewayListener.class.getName());
     private Socket socket = null;
     private boolean terminate = false;
     private boolean terminated = false;
@@ -56,7 +56,7 @@ public class EthernetGatewayListener implements Runnable {
                 if (buf.ready()) {
                     String message = buf.readLine();
                     _logger.debug("Message Received: {}", message);
-                    McObjectManager.getRawMessageQueue().putMessage(RawMessage.builder()
+                    RawMessageQueue.getInstance().putMessage(RawMessage.builder()
                             .gatewayId(gateway.getId())
                             .data(message)
                             .networkType(gateway.getNetworkType())

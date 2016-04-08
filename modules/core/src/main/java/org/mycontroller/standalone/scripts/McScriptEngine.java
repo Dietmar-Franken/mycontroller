@@ -22,20 +22,17 @@ import java.io.FileReader;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.3
  */
+@Slf4j
+@AllArgsConstructor
 public class McScriptEngine implements Runnable {
-    private static final Logger _logger = LoggerFactory.getLogger(McScriptEngine.class);
     private McScript mcScript;
-
-    public McScriptEngine(McScript mcScript) {
-        this.mcScript = mcScript;
-    }
 
     public Object executeScript() throws McScriptException, ScriptException, FileNotFoundException {
         if (!mcScript.isValid()) {

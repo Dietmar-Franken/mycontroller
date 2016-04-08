@@ -19,6 +19,7 @@ package org.mycontroller.standalone.api.jaxrs.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.AppProperties.MC_LANGUAGE;
 import org.mycontroller.standalone.AppProperties.MC_TIME_FORMAT;
 import org.mycontroller.standalone.AppProperties.NETWORK_TYPE;
@@ -66,15 +67,12 @@ import org.mycontroller.standalone.rule.RuleUtils.STRING_OPERATOR;
 import org.mycontroller.standalone.timer.TimerUtils.FREQUENCY_TYPE;
 import org.mycontroller.standalone.timer.TimerUtils.TIMER_TYPE;
 import org.mycontroller.standalone.timer.TimerUtils.WEEK_DAY;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.1
  */
 public class TypesUtils {
-    static final Logger _logger = LoggerFactory.getLogger(TypesUtils.class.getName());
 
     public static final String NODE_IDENTIFIER = "NODE";
 
@@ -919,7 +917,7 @@ public class TypesUtils {
     public static ArrayList<TypesIdNameMapper> getLanguages() {
         MC_LANGUAGE[] languages = MC_LANGUAGE.values();
         ArrayList<TypesIdNameMapper> typesIdNameMappers = new ArrayList<TypesIdNameMapper>();
-        MC_LANGUAGE selected = McObjectManager.getAppProperties().getLanguage();
+        MC_LANGUAGE selected = AppProperties.getInstance().getLanguage();
         for (MC_LANGUAGE language : languages) {
             if (selected == language) {
                 typesIdNameMappers.add(TypesIdNameMapper.builder().id(language.name().toLowerCase())

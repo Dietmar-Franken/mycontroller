@@ -21,15 +21,15 @@ import java.util.HashMap;
 import org.mycontroller.standalone.db.tables.RuleDefinitionTable;
 import org.mycontroller.standalone.model.ResourceModel;
 import org.mycontroller.standalone.rule.RuleUtils.STRING_OPERATOR;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
@@ -38,8 +38,9 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@Slf4j
+@NoArgsConstructor
 public class RuleDefinitionString extends RuleDefinition {
-    private static final Logger _logger = LoggerFactory.getLogger(RuleDefinitionString.class);
     public static final String KEY_OPERATOR = "operator";
     public static final String KEY_PATTERN = "pattern";
     public static final String KEY_IGNORE_CASE = "ignoreCase";
@@ -47,10 +48,6 @@ public class RuleDefinitionString extends RuleDefinition {
     private STRING_OPERATOR operator;
     private String pattern;
     private boolean ignoreCase;
-
-    public RuleDefinitionString() {
-
-    }
 
     public RuleDefinitionString(RuleDefinitionTable ruleDefinitionTable) {
         updateRuleDefinition(ruleDefinitionTable);

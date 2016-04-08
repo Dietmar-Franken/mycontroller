@@ -24,28 +24,27 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.mycontroller.standalone.McObjectManager;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.api.jaxrs.json.BackupFile;
 import org.mycontroller.standalone.backup.BRCommons;
 import org.mycontroller.standalone.backup.Backup;
 import org.mycontroller.standalone.backup.Restore;
 import org.mycontroller.standalone.exceptions.McBadRequestException;
 import org.mycontroller.standalone.exceptions.McException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.3
  */
-
+@Slf4j
 public class BackupApi {
-    private static final Logger _logger = LoggerFactory.getLogger(BackupApi.class.getName());
 
     public List<BackupFile> getBackupList() {
         String[] filter = { "zip" };
         Collection<File> zipFiles = FileUtils.listFiles(
-                FileUtils.getFile(McObjectManager.getAppProperties().getBackupSettings().getBackupLocation()),
+                FileUtils.getFile(AppProperties.getInstance().getBackupSettings().getBackupLocation()),
                 filter, true);
         List<BackupFile> backupFiles = new ArrayList<BackupFile>();
         for (File zipFile : zipFiles) {

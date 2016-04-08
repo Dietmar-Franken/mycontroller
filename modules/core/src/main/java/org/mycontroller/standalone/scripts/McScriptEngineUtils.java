@@ -16,23 +16,29 @@
  */
 package org.mycontroller.standalone.scripts;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import org.apache.commons.io.FileUtils;
+import org.mycontroller.standalone.AppProperties;
 import org.mycontroller.standalone.scripts.api.McScriptApi;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Jeeva Kandasamy (jkandasa)
  * @since 0.0.3
  */
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class McScriptEngineUtils {
     private static ScriptEngineManager scriptEngineManager = null;
     public static final String MC_API = "mcApi";
     public static final String MC_SCRIPT_RESULT = "mcResult";
-
-    private McScriptEngineUtils() {
-
-    }
 
     public static synchronized ScriptEngineManager getScriptEngineManager() {
         if (scriptEngineManager == null) {
@@ -41,8 +47,25 @@ public class McScriptEngineUtils {
         return scriptEngineManager;
     }
 
+    public static File getScriptFile(String scriptFileName) throws IllegalAccessException, IOException {
+        File scriptFile = FileUtils.getFile(AppProperties.getInstance().getScriptLocation() + scriptFileName);
+        String scriptCanonicalPath = scriptFile.getCanonicalPath();
+        String scriptLocation = FileUtils.getFile(AppProperties.getInstance().getScriptLocation())
+                .getCanonicalPath();
+        //Check is file available and has access to read
+        if (!scriptFile.exists() || !scriptFile.canRead()) {
+            throw new IllegalAccessException("Unable to access this file '" + scriptCanonicalPath + "'!");
+        }
+        //Check file location inside scripts location
+        if (!scriptCanonicalPath.startsWith(scriptLocation)) {
+            throw new IllegalAccessException("Selected file is not under script location! '" + scriptCanonicalPath
+                    + "'!");
+        }
+        return scriptFile;
+    }
+
     //Load mc api details
-    public static synchronized void updateMcApi(ScriptEngine engine) {
+    public static void updateMcApi(ScriptEngine engine) {
         engine.put(MC_API, new McScriptApi());
     }
 
